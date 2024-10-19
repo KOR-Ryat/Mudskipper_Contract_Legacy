@@ -1,0 +1,15 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "CallTest_R",
+  "sourceName": "contracts/Mock/callTest.sol",
+  "abi": [
+    {
+      "stateMutability": "payable",
+      "type": "receive"
+    }
+  ],
+  "bytecode": "0x6080604052348015600f57600080fd5b50604580601d6000396000f3fe608060405236600a57005b600080fdfea264697066735822122057c7f6f9686715f40b579fa345b59fe369903c6ec1142c7e7175d0c0dec816a664736f6c63430008140033",
+  "deployedBytecode": "0x608060405236600a57005b600080fdfea264697066735822122057c7f6f9686715f40b579fa345b59fe369903c6ec1142c7e7175d0c0dec816a664736f6c63430008140033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

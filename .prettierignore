@@ -1,0 +1,6 @@
+node_modules
+artifacts
+*.json
+cache
+coverage*
+typechain

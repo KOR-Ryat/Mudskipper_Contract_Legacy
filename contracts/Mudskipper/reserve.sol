@@ -37,6 +37,7 @@ contract Reserve is IReserve, UUPSUpgradeable, AccessControlUpgradeable {
 
     // remove to address?
     function claimReserve (address to, uint256 quantity) external onlyRole(TX_RELAYER) returns (bool success) {
+        require(to != address(0), "ZeroAddress is given");
         require(quantity <= claimableQuantity, "Too much claim");
         require(claimedBlock[msg.sender] + claimableInterval <= block.number, "Too many claim");
 
@@ -47,14 +48,18 @@ contract Reserve is IReserve, UUPSUpgradeable, AccessControlUpgradeable {
         emit ReserveClaimed(to, quantity);
     }
 
+    function intervalPassed () external view returns (bool) {
+        return claimedBlock[msg.sender] + claimableInterval <= block.number;
+    }
+
     receive () external payable {}
  
     constructor () {
         _disableInitializers();
     }
 
-    function initialize () public initializer {
-        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+    function initialize(address owner) public initializer {
+        _grantRole(DEFAULT_ADMIN_ROLE, owner);
     }
 
     function _authorizeUpgrade (address newImplementation) internal override onlyRole(DEFAULT_ADMIN_ROLE) {}

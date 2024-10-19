@@ -10,9 +10,10 @@ contract DefaultProxy is ERC1967Proxy {
 
     constructor (
         address _logic,
-        bytes memory _data
+        bytes memory _data,
+        address owner
     ) ERC1967Proxy(_logic, _data) {
-        ERC1967Utils.changeAdmin(msg.sender);
+        ERC1967Utils.changeAdmin(owner);
     }
 
     function owner () public view returns (address) {

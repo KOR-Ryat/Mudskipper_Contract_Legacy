@@ -1,0 +1,18 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "CallTest_NR",
+  "sourceName": "contracts/Mock/callTest.sol",
+  "abi": [
+    {
+      "inputs": [],
+      "name": "a",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x6080604052348015600f57600080fd5b50607080601d6000396000f3fe6080604052348015600f57600080fd5b506004361060285760003560e01c80630dbe671f14602d575b600080fd5b60336035565b005b600080fdfea2646970667358221220dcad50fbc27528b50f2441489dec1c34845ddd517e1e783f8fdadf021fa1d6b264736f6c63430008140033",
+  "deployedBytecode": "0x6080604052348015600f57600080fd5b506004361060285760003560e01c80630dbe671f14602d575b600080fd5b60336035565b005b600080fdfea2646970667358221220dcad50fbc27528b50f2441489dec1c34845ddd517e1e783f8fdadf021fa1d6b264736f6c63430008140033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

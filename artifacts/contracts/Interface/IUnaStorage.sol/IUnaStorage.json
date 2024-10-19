@@ -1,0 +1,101 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "IUnaStorage",
+  "sourceName": "contracts/Interface/IUnaStorage.sol",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "token",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "totalAmount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint64",
+          "name": "dstChain",
+          "type": "uint64"
+        }
+      ],
+      "name": "getServiceFee",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "srcToken",
+          "type": "address"
+        },
+        {
+          "internalType": "uint64",
+          "name": "dstChain",
+          "type": "uint64"
+        }
+      ],
+      "name": "getTokenConfig",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "dstToken",
+              "type": "address"
+            },
+            {
+              "internalType": "enum UnaBridgeConfigs.AssetType",
+              "name": "asset",
+              "type": "uint8"
+            },
+            {
+              "internalType": "bytes4",
+              "name": "exitSelector",
+              "type": "bytes4"
+            },
+            {
+              "internalType": "enum UnaBridgeConfigs.LockType",
+              "name": "lock",
+              "type": "uint8"
+            },
+            {
+              "internalType": "bytes4",
+              "name": "enterSelector",
+              "type": "bytes4"
+            },
+            {
+              "internalType": "uint16",
+              "name": "serviceFeeRel",
+              "type": "uint16"
+            },
+            {
+              "internalType": "uint256",
+              "name": "serviceFeeAbs",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct UnaBridgeConfigs.TokenConfig",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

@@ -1,0 +1,110 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "IUnaBridge",
+  "sourceName": "contracts/Interface/IUnaBridge.sol",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "address",
+              "name": "from",
+              "type": "address"
+            },
+            {
+              "internalType": "uint64",
+              "name": "dstChain",
+              "type": "uint64"
+            },
+            {
+              "internalType": "address",
+              "name": "to",
+              "type": "address"
+            },
+            {
+              "internalType": "uint64",
+              "name": "gasLimit",
+              "type": "uint64"
+            },
+            {
+              "components": [
+                {
+                  "internalType": "address",
+                  "name": "token",
+                  "type": "address"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "amount",
+                  "type": "uint256"
+                }
+              ],
+              "internalType": "struct Client.EVMTokenAmount",
+              "name": "ccipFeeTokenAmountForCurrChain",
+              "type": "tuple"
+            },
+            {
+              "components": [
+                {
+                  "internalType": "address",
+                  "name": "token",
+                  "type": "address"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "amount",
+                  "type": "uint256"
+                }
+              ],
+              "internalType": "struct Client.EVMTokenAmount",
+              "name": "ccipFeeTokenAmountForNextChain",
+              "type": "tuple"
+            },
+            {
+              "internalType": "uint256",
+              "name": "totalAmount",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "bridgedAmount",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "srcToken",
+              "type": "address"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "metaHash",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "address",
+              "name": "contractAddress",
+              "type": "address"
+            },
+            {
+              "internalType": "bytes",
+              "name": "inputs",
+              "type": "bytes"
+            }
+          ],
+          "internalType": "struct UnaTypes.ExitERC20",
+          "name": "args",
+          "type": "tuple"
+        }
+      ],
+      "name": "exitERC20",
+      "outputs": [],
+      "stateMutability": "payable",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

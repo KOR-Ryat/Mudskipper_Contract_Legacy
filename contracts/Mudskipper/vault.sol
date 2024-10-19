@@ -32,6 +32,7 @@ contract Vault is IVault, UUPSUpgradeable, AccessControlUpgradeable {
     }
 
     function _setRecipient (address recipient, uint256 newShare) internal {
+        require(recipient != address(0), "ZeroAddress is given");
         uint256 lastShare = 0;
         if(_isRecipient(recipient)){
             lastShare = shareRatio[recipient];
@@ -74,8 +75,8 @@ contract Vault is IVault, UUPSUpgradeable, AccessControlUpgradeable {
         _disableInitializers();
     }
 
-    function initialize () public initializer {
-        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+    function initialize(address owner) public initializer {
+        _grantRole(DEFAULT_ADMIN_ROLE, owner);
     }
 
     function _authorizeUpgrade (address newImplementation) internal override onlyRole(DEFAULT_ADMIN_ROLE) {}

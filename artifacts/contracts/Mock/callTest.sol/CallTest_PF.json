@@ -1,0 +1,15 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "CallTest_PF",
+  "sourceName": "contracts/Mock/callTest.sol",
+  "abi": [
+    {
+      "stateMutability": "payable",
+      "type": "fallback"
+    }
+  ],
+  "bytecode": "0x6080604052348015600f57600080fd5b50603c80601d6000396000f3fe608060405200fea2646970667358221220b2d36ec94d9a8231a21f3f3e9118faeb659068c70df2ec394a2860adfe1c1f9464736f6c63430008140033",
+  "deployedBytecode": "0x608060405200fea2646970667358221220b2d36ec94d9a8231a21f3f3e9118faeb659068c70df2ec394a2860adfe1c1f9464736f6c63430008140033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}

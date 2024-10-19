@@ -6,52 +6,7 @@ import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts/proxy/utils/UUPSUpgradeable.sol";
 
-import "../Interface/IUnaBridge.sol";
-
-interface IMudskipper {
-    struct SwapData {
-        address callTo;
-        address approveTo;
-        address fromAsset;
-        uint256 fromQuantity;
-        address toAsset;
-        bytes callData;
-        bool requiresDeposit;
-    }
-
-    struct SwapRequest {
-        SwapData[] swapData;
-        uint256 minOutput;
-    }
-
-    struct RequestTicket {
-        uint256 id;
-        address sender;
-        address asset;
-        uint256 quantity;
-        uint256 fee;
-        uint256 funding;
-    }
-
-    struct Deposit {
-        address requester;
-        address asset;
-        uint256 quantity;
-        uint256 collectedFee;
-        uint256 revertFee;
-    }
-
-    struct Tx {
-        address to;
-        uint256 value;
-        bytes data;
-    }
-
-    error TransactionFailed (uint256 index);
-
-    event TransferRequested (RequestTicket ticket);
-    event TransferRejected (uint256 indexed ticketID, uint256 revertFee, Deposit returnedDeposit);
-}
+import "../Interface/IMudskipper.sol";
 
 contract Mudskipper is IMudskipper, UUPSUpgradeable, AccessControlUpgradeable {
     bytes32 constant public TICKET_PUBLISHER = keccak256("TICKET_PUBLISHER");
@@ -76,8 +31,8 @@ contract Mudskipper is IMudskipper, UUPSUpgradeable, AccessControlUpgradeable {
         _disableInitializers();
     }
 
-    function initialize () public initializer {
-        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+    function initialize(address owner) public initializer {
+        _grantRole(DEFAULT_ADMIN_ROLE, owner);
     }
 
     function writeRegistry (bytes32 key, address addr) external onlyRole(MUDSKIPPER_MANAGER) {
@@ -113,11 +68,12 @@ contract Mudskipper is IMudskipper, UUPSUpgradeable, AccessControlUpgradeable {
             ticket.asset,
             ticket.quantity,
             ticket.fee,
-            ticket.funding
+            ticket.funding,
+            ticket.deadline
         );
     }
 
-    function requestTransfer (RequestTicket calldata ticket, bytes calldata signature) public payable returns (bool success) {
+    function requestTransfer (RequestTicket calldata ticket, bytes calldata signature) external payable returns (bool success) {
         require(!denyRequest, "Service unavailable");
         require(_validateSignature(
             TICKET_PUBLISHER,
@@ -125,10 +81,11 @@ contract Mudskipper is IMudskipper, UUPSUpgradeable, AccessControlUpgradeable {
             signature
         ), "Invalid signature");
         require(ticket.sender == msg.sender, "Invalid ticket");
+        require(ticket.deadline >= block.timestamp, "Outdated ticket");
 
         uint256 feeValue = msg.value;
         if(ticket.asset == address(0)){
-            require(ticket.quantity < msg.value, "Insufficient value");
+            require(ticket.quantity <= msg.value, "Insufficient value");
             feeValue -= ticket.quantity;
         }else{
             // todo : consider variant
@@ -148,19 +105,25 @@ contract Mudskipper is IMudskipper, UUPSUpgradeable, AccessControlUpgradeable {
         emit TransferRequested(ticket);
     }
 
-    function callArbitrary (Tx[] calldata txs) external onlyRole(TX_RELAYER) returns (bool success) {
+    function callArbitrary (Tx[] calldata txs) external onlyRole(TX_RELAYER) returns (bool) {
         for(uint i=0; i<txs.length; i++){
-            (success, ) = txs[i].to.call{value : txs[i].value}(txs[i].data);
-            require(success, "Call failed");
+            (bool success, bytes memory res) = txs[i].to.call{value : txs[i].value}(txs[i].data);
+            if (!success) {
+                revert LowlevelError(res);
+            }
         }
+        return true;
     }
 
-    function bridgeViaLiFi (uint256 value, bytes memory data) external onlyRole(TX_RELAYER) returns (bool success) {
-        (success, ) = addressRegistry[AGGREGATOR_LIFI].call{value : value}(data);
-        require(success, "Bridge failed");
+    function bridgeViaLiFi (uint256 value, bytes memory data) external payable onlyRole(TX_RELAYER) returns (bool) {
+        (bool success, bytes memory res) = addressRegistry[AGGREGATOR_LIFI].call{value : value}(data);
+        if (!success) {
+            revert LiFiFailed(res);
+        }
+        return true;
     }
 
-    function swapAndUnaBridge (SwapRequest calldata swapRequest, UnaTypes.ExitERC20 memory unaBridgeCalldata) external onlyRole(TX_RELAYER) returns (bool success) {
+    function swapAndUnaBridge (SwapRequest calldata swapRequest, UnaTypes.ExitERC20 memory unaBridgeCalldata) external payable onlyRole(TX_RELAYER) returns (bool success) {
         require(swapRequest.swapData.length > 0, "Swap length is zero");
 
         _swap(swapRequest);
@@ -169,6 +132,9 @@ contract Mudskipper is IMudskipper, UUPSUpgradeable, AccessControlUpgradeable {
     }
 
     function _approveMax (address token, address to, uint256 min) internal {
+        require(to != address(0), "ZeroAddress is given");
+        if(token == address(0)){return;}
+
         if(IERC20(token).allowance(address(this), to) < min){
             bool success = IERC20(token).approve(to, type(uint256).max);
             require(success, "Approve failed");
@@ -181,11 +147,11 @@ contract Mudskipper is IMudskipper, UUPSUpgradeable, AccessControlUpgradeable {
 
     function _bridgeViaUnaBridge (UnaTypes.ExitERC20 memory unaBridgeCalldata) internal returns (bool success) {
         _approveMax(unaBridgeCalldata.srcToken, addressRegistry[BRIDGE_UNABRIDGE], unaBridgeCalldata.totalAmount);
-        IUnaBridge(addressRegistry[BRIDGE_UNABRIDGE]).exitERC20(unaBridgeCalldata);
+        IUnaBridge(addressRegistry[BRIDGE_UNABRIDGE]).exitERC20{value : unaBridgeCalldata.ccipFeeTokenAmountForCurrChain.amount}(unaBridgeCalldata);
         return true;
     }
     
-    function bridgeViaUnaBridge (UnaTypes.ExitERC20 memory unaBridgeCalldata) external onlyRole(TX_RELAYER) returns (bool success) {
+    function bridgeViaUnaBridge (UnaTypes.ExitERC20 memory unaBridgeCalldata) external payable onlyRole(TX_RELAYER) returns (bool success) {
         return _bridgeViaUnaBridge(unaBridgeCalldata);
     }
 
@@ -198,27 +164,34 @@ contract Mudskipper is IMudskipper, UUPSUpgradeable, AccessControlUpgradeable {
 
     function _swap (SwapRequest calldata args) internal returns (uint256 lastOutput) {
         address lastAsset = args.swapData[args.swapData.length - 1].toAsset;
-        uint256 beforeBalance = _getBalance(lastAsset, address(this));
+        uint256 beforeBalance = _getBalance(lastAsset, args.recipient);
 
         for(uint i=0; i<args.swapData.length; i++){
             _approveMax(args.swapData[i].fromAsset, args.swapData[i].approveTo, args.swapData[i].fromQuantity);
+
             (bool success, bytes memory res) = args.swapData[i].callTo.call{
                 value : args.swapData[i].fromAsset == address(0) ? args.swapData[i].fromQuantity : 0
             }(args.swapData[i].callData);
 
-            require(success, "Swap failed");
+            if(!success){
+                revert SwapFailed(i, res);
+            }
         }
 
-        lastOutput = _getBalance(lastAsset, address(this)) - beforeBalance;
+        lastOutput = _getBalance(lastAsset, args.recipient) - beforeBalance;
 
         require(lastOutput >= args.minOutput, "Insufficient output");
+
+        if(args.recipient != address(this)){
+            emit SwapExecuted(args.recipient, lastAsset, lastOutput);
+        }
     }
 
     function _getBalance (address asset, address owner) internal view returns (uint256) {
         return asset == address(0) ? owner.balance : IERC20(asset).balanceOf(owner);
     }
 
-    function rejectTransfer (uint256 ticketID, Deposit calldata deposit) external onlyRole(TX_RELAYER) returns (bool success) {
+    function rejectTransfer (uint256 ticketID, Deposit calldata deposit) external payable onlyRole(TX_RELAYER) returns (bool success) {
         uint256 refundNative = deposit.collectedFee - deposit.revertFee;
         if(deposit.asset == address(0)){
             refundNative += deposit.quantity;
@@ -227,9 +200,12 @@ contract Mudskipper is IMudskipper, UUPSUpgradeable, AccessControlUpgradeable {
             require(success, "Failed to transfer asset");
         }
         (success, ) = deposit.requester.call{value : refundNative}("");
+        require(success, "Failed to transfer native");
 
         emit TransferRejected(ticketID, deposit.revertFee, deposit);
     }
 
     function _authorizeUpgrade (address newImplementation) internal override onlyRole(DEFAULT_ADMIN_ROLE) {}
+
+    receive () external payable {}
 }

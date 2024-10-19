@@ -96,6 +96,28 @@
 				"type": "error"
 			},
 			{
+				"inputs": [
+					{
+						"internalType": "bytes",
+						"name": "reason",
+						"type": "bytes"
+					}
+				],
+				"name": "LiFiFailed",
+				"type": "error"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "bytes",
+						"name": "reason",
+						"type": "bytes"
+					}
+				],
+				"name": "LowlevelError",
+				"type": "error"
+			},
+			{
 				"inputs": [],
 				"name": "NotInitializing",
 				"type": "error"
@@ -104,11 +126,16 @@
 				"inputs": [
 					{
 						"internalType": "uint256",
-						"name": "index",
+						"name": "failedIndex",
 						"type": "uint256"
+					},
+					{
+						"internalType": "bytes",
+						"name": "reason",
+						"type": "bytes"
 					}
 				],
-				"name": "TransactionFailed",
+				"name": "SwapFailed",
 				"type": "error"
 			},
 			{
@@ -300,6 +327,11 @@
 							{
 								"internalType": "uint256",
 								"name": "funding",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "deadline",
 								"type": "uint256"
 							}
 						],
@@ -514,11 +546,11 @@
 				"outputs": [
 					{
 						"internalType": "bool",
-						"name": "success",
+						"name": "",
 						"type": "bool"
 					}
 				],
-				"stateMutability": "nonpayable",
+				"stateMutability": "payable",
 				"type": "function"
 			},
 			{
@@ -623,7 +655,7 @@
 						"type": "bool"
 					}
 				],
-				"stateMutability": "nonpayable",
+				"stateMutability": "payable",
 				"type": "function"
 			},
 			{
@@ -655,7 +687,7 @@
 				"outputs": [
 					{
 						"internalType": "bool",
-						"name": "success",
+						"name": "",
 						"type": "bool"
 					}
 				],
@@ -817,7 +849,7 @@
 						"type": "bool"
 					}
 				],
-				"stateMutability": "nonpayable",
+				"stateMutability": "payable",
 				"type": "function"
 			},
 			{
@@ -870,6 +902,11 @@
 							{
 								"internalType": "uint256",
 								"name": "funding",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "deadline",
 								"type": "uint256"
 							}
 						],
@@ -978,6 +1015,11 @@
 								"type": "tuple[]"
 							},
 							{
+								"internalType": "address",
+								"name": "recipient",
+								"type": "address"
+							},
+							{
 								"internalType": "uint256",
 								"name": "minOutput",
 								"type": "uint256"
@@ -1044,6 +1086,11 @@
 								"internalType": "struct IMudskipper.SwapData[]",
 								"name": "swapData",
 								"type": "tuple[]"
+							},
+							{
+								"internalType": "address",
+								"name": "recipient",
+								"type": "address"
 							},
 							{
 								"internalType": "uint256",
@@ -1155,7 +1202,7 @@
 						"type": "bool"
 					}
 				],
-				"stateMutability": "nonpayable",
+				"stateMutability": "payable",
 				"type": "function"
 			},
 			{
@@ -1452,6 +1499,14 @@
 				"dweb:/ipfs/QmeJQCtZrQjtJLr6u7ZHWeH3pBnjtLWzvRrKViAi7UZqxL"
 			]
 		},
+		"Interface/IMudskipper.sol": {
+			"keccak256": "0xe8226475bb1c84073e522c65f2a890ca7123b7375ad14da62838a14b7f961784",
+			"license": "UNLICENSED",
+			"urls": [
+				"bzz-raw://eec1a0cc5f760dffe9d88b70de631f11925c0a088e13ae2c75e95d765a8207a7",
+				"dweb:/ipfs/QmPbrbVGySzdPmtk7esXsACLjTqEZSjGrJCLApGzhHoNXp"
+			]
+		},
 		"Interface/IUnaBridge.sol": {
 			"keccak256": "0xe008afff2e47dc9e16d7f9e074d7a82629890a5ecfed28f5dd44df666f47c8e8",
 			"license": "UNLICENSED",
@@ -1461,11 +1516,11 @@
 			]
 		},
 		"Mudskipper\\mudskipper.sol": {
-			"keccak256": "0xcf41d713dff77233f8d1c8f7940e023b433c606fa9363f41a5d87afdeca94017",
+			"keccak256": "0x7e9aad94f528c3050b7314c45f5dbd88a589a7dfef4e934d61e02a5afe21c735",
 			"license": "UNLICENSED",
 			"urls": [
-				"bzz-raw://f6c65d6bf82be947dba64563fd461eb03410bb80f0972966e2299416234eeee1",
-				"dweb:/ipfs/QmcgPuCvUWfwsKa1oTnYxatbT6yWKZoiWMWLeHdHzyZfTK"
+				"bzz-raw://3c3958776d0c3f08163693f824845588a6f064cba8f28dd4b63f688c31c5f106",
+				"dweb:/ipfs/QmNNyP9iZhhewzjKeeyD4mKw9wJ2atG78cJkaJ8v2gMTDZ"
 			]
 		}
 	},
